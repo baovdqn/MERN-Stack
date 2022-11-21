@@ -1,7 +1,8 @@
-import './Login.scss'
-function Login() {
+import { Link } from 'react-router-dom';
+import './Signin.scss'
+function Signin() {
   return (
-    <div className="login">
+    <div className="login-container">
       <div className="signin">
         <h1 className="signin__title">Memories</h1>
         <form className="signin__form">
@@ -9,19 +10,28 @@ function Login() {
           <input className="password" type="text" name="password" placeholder="Password"/>
           <input className="btn-submit" type="submit" value="Login" />
         </form>
+        <div className="signin__line-or-line">
+          <div className="line"></div>
+          <p className='or'>OR</p>
+          <div className="line"></div>
+
+        </div>
+        <p className='signin__with-fb'> Login in with Facebook</p>
         <p className="signin__forgot">Forgot password</p>
       </div>
       <div className="register">
         <span className="register__text">Don't have an account?</span>
-        <span className="register__text--link">Sign up</span>
+        <Link to='/signup' className="register__text--link">Sign up</Link>
       </div>
       <div className="app">
         <p className="app__title">Get the app</p>
+        <div className="app__both">
         <img src="https://static.cdninstagram.com/rsrc.php/v3/yz/r/c5Rp7Ym-Klz.png" alt="Google play"/>
         <img src="https://static.cdninstagram.com/rsrc.php/v3/yu/r/EHY6QnZYdNX.png" alt="Appstore"/>
+        </div>
       </div>
     </div>
   );
 }
 
-export default Login;
+export default Signin;
