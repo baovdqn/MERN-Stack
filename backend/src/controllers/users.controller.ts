@@ -1,15 +1,8 @@
-import express, { Request, Response } from 'express';
-import mongoose from 'mongoose';
+// import { NextFunction } from "express";
+// import { User } from "../models/userModel";
 
-const postSignIn = (req: any, res: any) => {
-  const username = req.body.username;
-  const password = req.body.password
-  res.status(200).json({
-    username,
-    password
-  })
-}
-
-export {
-  postSignIn
-}
+// const getUser = async ( req: Request, res: Response, next: NextFunction) => {
+//   try {
+//     const data = await User
+//   }
+// }
