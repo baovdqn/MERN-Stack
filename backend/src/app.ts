@@ -3,6 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan'
 import createError from 'http-errors'
 import mongoose from 'mongoose';
+import * as dotenv from 'dotenv'
 
 // import authRoute from './routes/auth.route';
 import usersRoute from './routes/users.route';
@@ -18,6 +19,8 @@ app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan('dev'));
+
+dotenv.config()
 
 //connect to db
 import dbConfig from './config/db'

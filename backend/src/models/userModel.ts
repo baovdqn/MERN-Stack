@@ -24,6 +24,9 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  refreshToken: {
+    type: String
+  }
 }, { versionKey: false });
 
 const User = mongoose.model("Users", userSchema, 'users');
