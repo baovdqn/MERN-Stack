@@ -1,16 +1,14 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { User } from '../models/userModel';
-import jwt, { JwtPayload, sign, verify } from 'jsonwebtoken';
+import jwt, { Jwt } from 'jsonwebtoken';
 import randToken from 'rand-token';
 
-const generateToken = async (payLoad: string, secretSignature: any) => {
+const generateToken = async (payLoad: any, secretSignature: any) => {
   try {
     return await jwt.sign(
-      {
-        username: payLoad,
-      },
-      "Access_Token_Secret_#$%_ExpressJS_Authentication",
+      payLoad,
+      secretSignature,
       {
         algorithm: 'HS256',
         expiresIn: '15m',
@@ -22,15 +20,14 @@ const generateToken = async (payLoad: string, secretSignature: any) => {
   }
 };
 
-const decodeToken = async (accessTokenFromHeader: string, accessTokenSecret: string | any) => {
-  try {
-    return await verify(accessTokenFromHeader, "Access_Token_Secret_#$%_ExpressJS_Authentication", {
-      ignoreExpiration: true,
-    });
-  } catch (error) {
-    console.log(`Error in decode access token: ${error}`);
-    return null;
-  }
+const decodeToken = async (accessTokenFromHeader: string, accessTokenSecret: string): Promise<Jwt | null> => {
+  // try {
+
+  // } catch (error) {
+  //   console.log(`Error in decodeToken: ${error}`)
+  //   return null;
+  // }
+  return await null
 };
 
 const postSignIn = async (req: Request, res: Response) => {
@@ -48,7 +45,9 @@ const postSignIn = async (req: Request, res: Response) => {
   const accessTokenLife = process.env.ACCESS_TOKEN_LIFE;
   const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 
-  const dataForAccessToken = user.username;
+  const dataForAccessToken = {
+    user: user.username
+  }
 
   const accessToken = await generateToken(dataForAccessToken, accessTokenSecret);
   if (!accessToken) {
@@ -105,16 +104,15 @@ const postRefreshToken = async (req: Request, res: Response) => {
     return res.status(400).send('Không tìm thấy refresh token.');
   }
 
-  const accessTokenSecret = process.env.ACCESS_TOKEN_SECRE;
+  const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || 'Baobao';
 
   // Decode access token đó
   const decoded = await decodeToken(accessTokenFromHeader, accessTokenSecret);
-  console.log((decoded as JwtPayload)?.payload);
   if (!decoded) {
     return res.status(400).send('Access token không hợp lệ.');
   }
 
-  const username = (decoded as JwtPayload)?.payload; // Lấy username từ payload
+  const username = decoded.payload; // Lấy username từ payload
 
   const user = await User.findOne({ username: username });
   if (!user) {
