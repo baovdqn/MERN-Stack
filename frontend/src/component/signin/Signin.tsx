@@ -1,13 +1,26 @@
 import { Link } from 'react-router-dom';
 import './Signin.scss'
+import { signIn } from '../../api/login.api'
+import React, { ChangeEvent, FormEvent, useState } from 'react';
 function Signin() {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  
+  const onUsernameChange = (evt:  ChangeEvent<HTMLInputElement>) => setUsername(evt.target.value)
+  const onPasswordChange = (evt:  ChangeEvent<HTMLInputElement>) => setPassword(evt.target.value)
+  const onSubmit = async (e: FormEvent) =>{
+    e.preventDefault();
+    const result = await signIn(username, password) as any;
+    alert(result.data.msg);
+    return result.msg;
+  }
   return (
     <div className="login-container">
       <div className="signin">
         <h1 className="signin__title">Memories</h1>
-        <form className="signin__form">
-          <input className="user" type="text" name="username" placeholder="Your email"/>
-          <input className="password" type="text" name="password" placeholder="Password"/>
+        <form className="signin__form" onSubmit={onSubmit}>
+          <input className="user" type="text" name="username" onChange={onUsernameChange} placeholder="Your email"/>
+          <input className="password" type="password" name="password" onChange={onPasswordChange} placeholder="Password"/>
           <input className="btn-submit" type="submit" value="Login" />
         </form>
         <div className="signin__line-or-line">

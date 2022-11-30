@@ -1,18 +1,21 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { User } from '../models/userModel';
-import jwt, { Jwt } from 'jsonwebtoken';
+import jwt, { decode, Jwt, SignOptions } from 'jsonwebtoken';
 import randToken from 'rand-token';
+import { JwtAuth } from '../interfaces/pay-load-auth.interface';
+import { IBodyPayload } from '../interfaces/body-payload.interface';
 
-const generateToken = async (payLoad: any, secretSignature: any) => {
+const generateToken = async (payLoad: IBodyPayload, secretSignature: string): Promise<string | null> => {
+  const options: SignOptions = {
+    algorithm: 'HS256',
+    expiresIn: '15m',
+  }
   try {
     return await jwt.sign(
       payLoad,
       secretSignature,
-      {
-        algorithm: 'HS256',
-        expiresIn: '15m',
-      }
+      options
     );
   } catch (error) {
     console.log(`Error in generate access token:  + ${error}`);
@@ -21,13 +24,12 @@ const generateToken = async (payLoad: any, secretSignature: any) => {
 };
 
 const decodeToken = async (accessTokenFromHeader: string, accessTokenSecret: string): Promise<Jwt | null> => {
-  // try {
-
-  // } catch (error) {
-  //   console.log(`Error in decodeToken: ${error}`)
-  //   return null;
-  // }
-  return await null
+  try {
+    return await decode(accessTokenFromHeader, { complete: true })
+  } catch (error) {
+    console.log(`Error in decodeToken: ${error}`)
+    return null;
+  }
 };
 
 const postSignIn = async (req: Request, res: Response) => {
@@ -41,12 +43,10 @@ const postSignIn = async (req: Request, res: Response) => {
   if (!isPasswordValid) {
     return res.status(401).send('Mật khẩu không chính xác.');
   }
-
-  const accessTokenLife = process.env.ACCESS_TOKEN_LIFE;
-  const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+  const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET as string;
 
   const dataForAccessToken = {
-    user: user.username
+    username: user.username
   }
 
   const accessToken = await generateToken(dataForAccessToken, accessTokenSecret);
@@ -104,15 +104,17 @@ const postRefreshToken = async (req: Request, res: Response) => {
     return res.status(400).send('Không tìm thấy refresh token.');
   }
 
-  const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || 'Baobao';
+  const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET as string;
 
   // Decode access token đó
-  const decoded = await decodeToken(accessTokenFromHeader, accessTokenSecret);
+  const decoded = await decodeToken(accessTokenFromHeader, accessTokenSecret) as JwtAuth;
   if (!decoded) {
     return res.status(400).send('Access token không hợp lệ.');
   }
 
-  const username = decoded.payload; // Lấy username từ payload
+  console.log('decoded', decoded);
+
+  const username = decoded.payload.username; // Lấy username từ payload
 
   const user = await User.findOne({ username: username });
   if (!user) {
@@ -124,7 +126,9 @@ const postRefreshToken = async (req: Request, res: Response) => {
   }
 
   // Tạo access token mới
-  const dataForAccessToken = username;
+  const dataForAccessToken = {
+    username: user.username
+  };
 
   const accessToken = await generateToken(dataForAccessToken, accessTokenSecret);
   if (!accessToken) {

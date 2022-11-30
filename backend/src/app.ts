@@ -9,10 +9,11 @@ import * as dotenv from 'dotenv'
 import usersRoute from './routes/users.route';
 import authRoute from './routes/auth.route';
 
+dotenv.config()
+const port = process.env.PORT || 8000;
 
 
 const app: Application = express();
-const port = 3000;
 
 app.use(cors())
 // Body parsing Middleware
@@ -20,10 +21,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 
-dotenv.config()
 
 //connect to db
 import dbConfig from './config/db'
+import { env } from 'process';
 mongoose.connect(`mongodb://${dbConfig.host}:${dbConfig.port}/${dbConfig.db}`)
 
 
