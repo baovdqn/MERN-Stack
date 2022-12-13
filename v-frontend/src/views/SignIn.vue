@@ -1,29 +1,70 @@
+
+<script  lang="ts">
+export default {
+  name: 'sign-In',
+  data() {
+    return {
+      email: '',
+      password: ''
+    }
+  },
+  method: {
+    onSubmit(e: any): void {
+
+    }
+  }
+}
+</script>
 <template>
+  <div class="signin-container"></div>
   <div class="signin">
-    <form class="signin-form" action="POST">
+    <form id="formSignIn" class="signin-form" @submit='onSubmit'>
+      <h1 class="signin-title">SignIn</h1>
       <div class="form-user">
-        <label for="email">Email:</label>
-        <input type="text" name="email" />
+        <label for="email">Email <span class="require">(*)</span></label>
+        <input autocomplete="off" type="text" name="email" placeholder="Email" v-model=email />
       </div>
       <div class="form-password">
-        <label for="password">Password:</label>
-        <input type="password" name="password" />
+        <label for="password">Password <span class="require">(*)</span></label>
+        <input autocomplete="off" type="password" name="password" placeholder="Password" v-model="password" />
       </div>
+      <p class="signin-forgot">Forgot password ?</p>
+      <input class="btn-submit" type="submit" value="Sign in" />
     </form>
-    <button class="btn-submit">SignIn</button>
   </div>
 </template>
 
 <style lang="scss">
+@import "../assets/base-color.scss";
+
 .signin {
-  margin: auto;
-  width: 300px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: url('src/assets/login.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+
   .signin-form {
+    width: 350px;
+
+    .signin-title {
+      font-size: 1.5rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
     .form-user {
       margin-bottom: 1rem;
+
       label {
         display: block;
+        margin-bottom: 0.5rem;
       }
+
       input {
         display: block;
         width: 100%;
@@ -33,6 +74,7 @@
         background-color: #fff;
         border: 1px solid #ededed;
         border-radius: 0.25rem;
+        outline: none;
       }
     }
 
@@ -40,9 +82,30 @@
       @extend .form-user;
     }
   }
-  .btn-submit{
+
+  .signin-forgot {
+    margin-bottom: 1rem;
+    display: block;
+    text-align: end;
+    font-size: 0.75rem;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .btn-submit {
     display: block;
     margin: 0 auto;
+    outline: none;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    background-color: $button-primary;
+    color: white;
+  }
+
+  .require {
+    color: $require-color;
   }
 }
 </style>
