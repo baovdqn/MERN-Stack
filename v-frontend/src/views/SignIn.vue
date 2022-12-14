@@ -1,16 +1,39 @@
 
 <script  lang="ts">
+import type { ErrorMessage } from '@/common/interface/ErrorMessage';
+import axios, { AxiosError, type AxiosResponse } from 'axios';
 export default {
+
   name: 'sign-In',
   data() {
+
     return {
       email: '',
-      password: ''
+      password: '',
+      evn: {
+        host: 'http://10.0.11.132:3001',
+      }
     }
   },
-  method: {
-    onSubmit(e: any): void {
+  methods: {
+    async onSubmit(e: Event) {
+      const responseLogin = await this.login(this.email, this.password);
+      alert(responseLogin?.data.accessToken)
+    },
 
+    async login(email: string, password: string): Promise<AxiosResponse | null> {
+      const path = this.evn.host + '/auth/signin'
+      const body = {
+        username: email,
+        password: password
+      }
+      try {
+        return await axios.post(path, body);
+      } catch (error) {
+        const err = error as AxiosError;
+        console.log('Lỗi đăng nhập', err.response?.data)
+        return null;
+      }
     }
   }
 }
@@ -18,7 +41,7 @@ export default {
 <template>
   <div class="signin-container"></div>
   <div class="signin">
-    <form id="formSignIn" class="signin-form" @submit='onSubmit'>
+    <form id="formSignIn" class="signin-form" @submit.prevent='onSubmit($event)'>
       <h1 class="signin-title">SignIn</h1>
       <div class="form-user">
         <label for="email">Email <span class="require">(*)</span></label>
