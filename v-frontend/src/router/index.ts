@@ -1,5 +1,7 @@
+import DashboardVue from '@/views/Dashboard.vue'
+import NotFoundVue from '@/views/NotFound.vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import SignInVue from '../views/SignIn.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,14 +9,21 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: SignInVue
+      component: DashboardVue
     },
     {
       path: '/signin',
       name: 'signin',
       component: () => import('../views/SignIn.vue')
-    }
+    },
+    { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFoundVue },
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  const isAuth = window.localStorage.getItem('token')?.toString();
+  if (to.path !== '/signin' && !isAuth) next({ name: 'signin' })
+  else next()
 })
 
 export default router

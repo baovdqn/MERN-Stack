@@ -1,7 +1,7 @@
 
 <script  lang="ts">
-import type { ErrorMessage } from '@/common/interface/ErrorMessage';
-import axios, { AxiosError, type AxiosResponse } from 'axios';
+import type { LoginResponse } from '@/common/interface/LoginResponse';
+import axios, { AxiosError, isAxiosError, type AxiosResponse } from 'axios';
 export default {
 
   name: 'sign-In',
@@ -17,11 +17,15 @@ export default {
   },
   methods: {
     async onSubmit(e: Event) {
-      const responseLogin = await this.login(this.email, this.password);
-      alert(responseLogin?.data.accessToken)
+      const responseLogin: LoginResponse = await this.login(this.email, this.password);
+      if (isAxiosError(responseLogin)) {
+        return alert('Đăng nhập thất bại');
+      }
+      window.localStorage.setItem('token', JSON.stringify(responseLogin?.data?.accessToken));
+      console.log(this.$router.push('/'))
     },
 
-    async login(email: string, password: string): Promise<AxiosResponse | null> {
+    async login(email: string, password: string): Promise<AxiosResponse | AxiosError> {
       const path = this.evn.host + '/auth/signin'
       const body = {
         username: email,
@@ -31,8 +35,7 @@ export default {
         return await axios.post(path, body);
       } catch (error) {
         const err = error as AxiosError;
-        console.log('Lỗi đăng nhập', err.response?.data)
-        return null;
+        return err;
       }
     }
   }
@@ -58,7 +61,7 @@ export default {
 </template>
 
 <style lang="scss">
-@import "../assets/base-color.scss";
+@import "../assets/base-scss/base-color.scss";
 
 .signin {
   height: 100vh;
