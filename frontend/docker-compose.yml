@@ -1,0 +1,7 @@
+version: '3.8'
+
+services:
+  app:
+    image: memories
+    ports:
+      - "3002:80"
