@@ -12,6 +12,6 @@ app.use(router);
 
 //use Ant design
 
-app.use(Antd);
+// app.use(Antd);
 
 app.mount('#app')
